@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load categories i18n %}
+
+{% block title %}{{ block.super }} - {% translate "Articles" %}{% endblock %}
+
+{% block sidebar %}
+  {% if tags %}
+    <div class="col-sm-4 px-3">
+      {% block tags %}
+        {% translate "This week..." as title %}
+        {% include "feeds/snippets/tag_cloud.html" %}
+      {% endblock %}
+    </div>
+  {% endif %}
+{% endblock %}
+
+{% block main %}
+  <main class="col-sm-8 px-3">
+    {% for date, articles in object_groups.items %}
+      <div class="d-flex flex-row">
+        <div class="calendar-date">
+          <div class="month" style="background-color: #154ed8">{{ date|date:"M" }}</div>
+          <div class="day">{{ date|date:"j" }}</div>
+        </div>
+        <ul class="list-unstyled">
+        {% for article in articles %}
+          <li class="mb-2">
+            <div>
+              <a rel="external" class="fs-5 text-underline-hover article-link align-middle"
+                 data-link="{% url "feeds:article-click" %}" data-code="{{ article.code }}"
+                 href="{{ article.url }}">{{ article.title }}</a>
+                {% for label in article|categories:"label" %}
+                  <span class="badge ms-2 align-middle label-{{ label.slug }}">{{ label.label|capfirst }}</span>
+                {% endfor %}
+            </div>
+            <small class="text-muted">
+              {% if article.has_authors %}
+                {% for author in article.authors.all %}
+                  {% if not forloop.first %} ,{% endif %}<a class="text-underline-hover" href="{% url 'feeds:author' author.slug %}">{{ author.name }}</a>
+                {% endfor %}
+                -
+              {% endif %}
+              <a class="text-underline-hover"
+                 href="{% url 'feeds:source' article.source.slug %}">{{ article.source.name }}</a>
+              {% if article.archive_url %}
+                - <a rel="external" class="text-underline-hover article-link"
+                     data-link="{% url "feeds:article-click" %}" data-code="{{ article.code }}"
+                     href="{{ article.archive_url }}">{% translate "Archived" %}</a>
+              {% endif %}
+              {% if article.views %}
+                - {% blocktranslate count views=article.views %}
+                    {{ views }} view
+                  {% plural %}
+                    {{ views }} views
+                {% endblocktranslate %}
+              {% endif %}
+            </small>
+            {% if article.comment %}
+              <div class="mt-1 pb-2"><em>{{ article.comment|safe }}</em></div>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+      </div>
+    {% endfor %}
+
+    {% block pagination %}
+      {% include "feeds/snippets/pagination.html" with previous_page_title="Next Week" next_page_title="Previous Week"%}
+    {% endblock %}
+
+  </main>
+{% endblock %}

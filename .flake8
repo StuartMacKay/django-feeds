@@ -1,0 +1,11 @@
+# The flake8 project doesn't and likely won't ever support putting
+# the configuration in pyproject.toml so we need a separate file.
+# There is a plugin that can lood the configuration from pyproject.toml
+# if you are so inclined. See https://pypi.org/project/Flake8-pyproject/
+
+[flake8]
+# The line length defined for black and isort
+max-line-length = 88
+
+# Print the total number of errors.
+count = true
