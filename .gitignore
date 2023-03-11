@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[co]
+*.egg*
+
+# Editor temp files
+*~
+
+# Ignore dot files except those required for the project
+.*
+!.editorconfig
+!.flake8
+!.gitattributes
+!.github
+!.gitignore
+!.gitkeep
+!.readthedocs.yml
+
+# Project artefacts
+build
+dist
+reports
+venv
+
+# Django runtime files
+db.sqlite3
+
+# Any local makefiles
+*.mk

@@ -1,0 +1,20 @@
+{% extends "feeds/sources.html" %}
+{% load i18n %}
+
+{% block description %}
+  <div class="mt-4 me-4 text-muted">
+    {% blocktranslate %}
+      The most popular sources based on the number of views in the past four weeks.
+      Updated daily.
+    {% endblocktranslate %}
+  </div>
+{% endblock %}
+
+{% block object-detail %}
+  <div class="fs-5">
+    {{ forloop.counter|default_if_none:"- " }}. <a class="text-underline-hover" href="{% url "feeds:source" object.slug %}">{{ object.name }}</a>
+  </div>
+  <small class="text-muted">
+    {{ object.views|default_if_none:"0" }}{{ " " }}{% if object.views == 1 %}{% translate "view" %}{% else %}{% translate "views" %}{% endif %}
+  </small>
+{% endblock %}
