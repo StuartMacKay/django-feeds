@@ -1,0 +1,13 @@
+{% load i18n %}
+<div class="mb-4">
+  {% translate "Topics covered..." as default_title %}
+  <span class="d-block fs-5 mb-1">{% if title %}{{ title }}{% else %}{{ default_title }}{% endif %}</span>
+  <ul class="d-flex flex-row flex-wrap list-unstyled">
+    {% for tag in tags %}
+      <li class="px-1 align-self-center">
+        <a href="{% url 'feeds:tag' tag.slug %}"
+           class="text-underline-hover tag-size-{{ tag.weight }}">{{ tag.name }}</a>
+      </li>
+   {% endfor %}
+  </ul>
+</div>

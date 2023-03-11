@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Sources" %}{% endblock %}
+
+{% block sidebar %}
+  <div class="col-sm-4 px-3">
+    <h1 class="fs-4">{% translate "Sources" %}</h1>
+    <div class="fs-5">
+      <a class="text-underline-hover" href="{% url 'fees:sources' %}">{% translate "Browse" %}</a>
+    </div>
+    <div class="fs-5">
+      <a class="text-underline-hover" href="{% url 'feeds:sources-popular' %}">{% translate "Popular" %}</a>
+    </div>
+    {% block description %}{% endblock %}
+  </div>
+{% endblock %}
+
+{% block main %}
+  <div class="col-sm-8 px-3">
+    <ul class="list-inline">
+      {% for letter, page_number in page_obj.paginator.index.items %}
+        <li class="list-inline-item p-1">
+          <a class="text-underline-hover" href="{% url 'feeds:sources' %}?page={{ page_number }}">{{ letter }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+
+    {% block object-list %}
+      <ul class="list-unstyled mb-4">
+        {% for object in page_obj.object_list %}
+        <li>
+          {% block object-detail %}
+            {% ifchanged object.index_letter %}
+              <div class="mt-2">
+                <span class="fs-2">{{ object.index_letter }}</span>
+                {% if object.index_page < page_obj.number %}
+                  <span class="ms-2 fs-5 text-muted">({% translate "continued" %})</span>
+                {% endif %}
+              </div>
+            {% endifchanged %}
+            <div class="fs-5">
+              <a class="text-underline-hover" href="{% url "feeds:source" object.slug %}">{{ object.name }}</a>
+            </div>
+              <small class="text-muted">
+                {{ object.article_count|default_if_none:"0" }}{{ " " }}{% if object.article_count == 1 %}{% translate "Post" %}{% else %}{% translate "Posts" %}{% endif %}
+                {% if object.article_count %}
+                  - {% translate "Latest" %}: {{ object.articles.all.0.date|date:"jS M Y" }}
+                {% endif %}
+              </small>
+          {% endblock %}
+        </li>
+        {% endfor %}
+      </ul>
+    {% endblock %}
+
+    {% block pagination %}
+      {% include "feeds/snippets/pagination.html" %}
+    {% endblock %}
+
+  </div>
+{% endblock %}
