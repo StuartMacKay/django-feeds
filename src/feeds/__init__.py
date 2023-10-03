@@ -1,0 +1,5 @@
+__version__ = "0.0.0"
+__author__ = ""
+__email__ = ""
+__license__ = "Apache Software License 2.0"
+__copyright__ = ""
