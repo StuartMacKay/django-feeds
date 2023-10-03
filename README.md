@@ -1,64 +1,87 @@
-# Django App Project
+# Django Feeds
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/StuartMacKay/django-app-template/ci.yml?branch=master)](https://github.com/StuartMacKay/django-app-template/actions/workflows/ci.yml?query=branch%3Amaster)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
+Django Feeds is an aggregator for entries from RSS and Atom feeds.
 
-## Features
+## Quick Start
 
-* Development with [black](https://github.com/psf/black) so everybody gets the code formatting rules they deserve
-* Development with [flake8](https://flake8.pycqa.org/en/latest/) so people using ed get syntax checking
-* Development with [isort](https://pycqa.github.io/isort/) for automatically sorting imports
-* Development with [mypy](https://mypy-lang.org/) for type-hinting to catch errors
-* Testing with [pytest](https://docs.pytest.org/), [FactoryBoy](https://factoryboy.readthedocs.io/en/stable/) and [tox](https://tox.wiki/en/latest/)
-* Manage versions with [bump2version](https://pypi.org/project/bump2version/) - for semantic version numbers
-* Manage dependency versions with [pip-tools](https://github.com/jazzband/pip-tools)
-* Manage dependency upgrades with [pip-upgrade](https://github.com/simion/pip-upgrader)
+Download and install the app:
 
-## Quick start
+```pip istall django-rss-feeds```
 
-First, download and unzip the project files in the directory of your choice.
-Then rename the project to something more useful:
-```shell
-mv django-app-template django-myapp
+Add the app to Django:
+
+```python
+INSTALLED_APPS = [
+    ...,
+    "tagulous",
+    "feeds.apps.Config",
+]
 ```
 
-Change to the project directory and start setting things up:
+Run the migrations:
+
+```python manage.py migrate```
+
+## Demo
+
+The project contains demonstration Django application, with celery, that 
+lets you see how it all works. The demo site aggregates the feeds and 
+publishes the Articles, grouped by date, with each page showing the Articles 
+for the past 7 days. Links on each entry allow you navigate to ListViews 
+for each Source, Author or Tag.
+
 ```shell
-cd django-myapp
+git clone git@github.com:StuartMacKay/django-feeds.git
+docker-compose up
 ```
 
-First, build the virtualenv and install all the dependencies. This will 
-also build the library:
+Next run a shell on the web service, so you can create an admin account, 
+log in and add a Source and a Feed.
+
 ```shell
-make install
+docker-compose exec web bash
+./manage.py createsuperuser
 ```
 
-Now run the demo site:
-```shell
-make demo
-```
+Now log into the Django Admin. In the Feeds section, add a Source and a Feed 
+for that Source, for example, https://news.ycombinator.com/rss. Now in the 
+Feed changelist, select the Feed you just added and run the 'Load selected 
+feeds' action. Voila, you now have a set of Articles created from the feed.
 
+## Settings
 
-Run the database migrations:
-```shell
-./manage.py migrate
-```
+`FEEDS_TASK_SCHEDULE`, default "0 * * * *". A crontab string that 
+set when a Celery task runs to check whether any Feeds are scheduled
+to load.
 
-Run the tests:
-```shell
-make tests
-```
+`FEEDS_LOAD_SCHEDULE`, default "0 * * * *". A crontab string that sets 
+when Feeds is scheduled to be loaded. This can be overridden on Feeds 
+individually.
 
-Run the django server:
-```shell
-./manage.py runserver
-```
+`FEEDS_USER_AGENT`, the User-Agent string that identifies who is requesting 
+the feed. Some sites won't work without this set. In any case it's always 
+good manners to identify yourself.
 
-Open a browser and visit http://localhost:8000 and, voila, we have a working
-site. Well cover the deployment later.
+`FEEDS_NORMALIZE_TITLES`, default True. Tidy up titles to remove surrounding 
+quotes, remove trailing periods, etc. That way titles from different Feeds 
+have the same style.
 
-Almost all steps used the project Makefile. That's great if you're running 
-Linux with GNU Make and not much fun if you're not. All is not lost, however. 
-All the Makefile's targets contain only one or two commands, so even if you 
-are running Windows you should still be able to get the site running without 
-too much effort.
+`FEEDS_TRUNCATE_TITLES`, default None. Limit the length of titles. Some 
+titles are mini-posts all by themselves so you can used this to truncate 
+them to a given number of characters.
+
+`FEEDS_FILTER_TAGS`, default {"uncategorized": None}. Use this to rename 
+or delete tags from the Feed. The default allows you to remove the default 
+"Uncategorized" tag that often appears in Wordpress feeds. There is a 
+`load_tags` flag on Feed that controls whether tags are added to Articles. 
+That allows you to selectively load the tags from conscientious blogs and 
+skip the lazy one.
+
+## Contributing
+
+This app was written with a single use-case - republishing a list of links 
+to posts from other blogs. It performs that function well, but, as usual,
+there is always room for improvement. Feedback, feature requests, bug 
+reports, improvements to the documentation are all welcome. Read the TODO
+list for things that need work and the HowTos in the docs directory to 
+get started.

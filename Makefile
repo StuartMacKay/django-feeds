@@ -60,6 +60,9 @@ help:
 	@echo "  clean                to clean everything EXCEPT the virtualenv"
 	@echo
 	@echo "  venv                 to create the virtualenv"
+	@echo "  build                to build the package"
+	@echo "  checks               to run quality code checks"
+	@echo "  coverage             to measure the test coverage"
 	@echo "  install              to install the project dependencies in the virtualenv"
 	@echo
 	@echo "  checks               to run code quality checks"
@@ -92,10 +95,6 @@ clean-build:
 	rm -rf build
 	rm -rf src/*.egg-info
 
-.PHONY: clean-docs
-clean-docs:
-	cd docs && make clean
-
 .PHONY: clean-tests
 clean-tests:
 	rm -rf .tox
@@ -125,19 +124,16 @@ clean: clean-build clean-coverage clean-docs clean-mypy clean-tests
 $(venv_dir):
 	$(site_python) -m venv $(venv_dir)
 	$(pip) install --upgrade pip setuptools wheel
-	$(pip) install pip-tools==6.10.0
+	$(pip) install pip-tools
 
-requirements/dev.txt: requirements/dev.in requirements/docs.in requirements/tests.in
+requirements/dev.txt: requirements/dev.in requirements/tests.in
 	$(pip-compile) requirements/dev.in
 
-requirements/docs.txt: requirements/docs.in
-	$(pip-compile) requirements/docs.in
-
-requirements/tests.txt: requirements/docs.in requirements/tests.in
+requirements/tests.txt: requirements/tests.in
 	$(pip-compile) requirements/tests.in
 
 .PHONY: requirements
-requirements: requirements/dev.txt requirements/docs.txt requirements/tests.txt
+requirements: requirements/dev.txt requirements/tests.txt
 
 .PHONY: venv
 venv: $(venv_dir) requirements
@@ -147,7 +143,6 @@ venv: $(venv_dir) requirements
 install: venv
 	$(pip) install --upgrade pip setuptools wheel
 	$(pip) install pip-tools
-	test -f requirements/docs.txt || $(pip-compile) requirements/docs.in
 	test -f requirements/dev.txt || $(pip-compile) requirements/dev.in
 	test -f requirements/tests.txt || $(pip-compile) requirements/tests.in
 	$(pip-sync) requirements/dev.txt
@@ -190,15 +185,6 @@ tests:
 .PHONY: tox
 tox: test
 	$(tox)
-	$(tox) -e docs
-
-# ########
-#   Docs
-# ########
-
-.PHONY: docs
-docs:
-	cd docs && make html
 
 # ###########
 #   Release
