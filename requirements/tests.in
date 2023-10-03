@@ -6,4 +6,5 @@ mypy
 pytest
 pytest-django
 pytest-factoryboy
+pytest-freezegun
 pytest-cov
