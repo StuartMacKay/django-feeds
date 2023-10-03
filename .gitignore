@@ -29,6 +29,7 @@ venv
 
 # Django runtime files
 db.sqlite3
+celerybeat-schedule
 
 # Any local makefiles
 *.mk
