@@ -1,17 +1,83 @@
 {% load static i18n %}
+{% get_current_language as LANGUAGE_CODE %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
-  <meta charset="utf-8"/>
-  <title>
-    {% block head_title %}{% endblock %}
-  </title>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  {% block extra_style %}{% endblock %}
-</head>
+  <meta charset="utf-8">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}" sizes="any">
+  <link rel="icon" type="image/svg+xml" href="{% static 'icon.svg' %}">
+  <link rel="apple-touch-icon" href="{% static 'apple-touch-icon.png' %}">
+  <link rel="manifest" href="{% static 'manifest.webmanifest' %}">
+  <title>{% block title %}Django Feeds{% endblock %}</title>
 
+  {% block css %}
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/site.css' %}" rel="stylesheet">
+  {% endblock %}
+
+  {% block javascript %}
+  {% endblock %}
+</head>
 <body>
-  {% block content %}{% endblock %}
+  {% block header %}
+    <header class="text-white" style="background-color: #154ed8;">
+      <nav class="navbar navbar-expand-sm">
+        <div class="container-fluid">
+
+          <a class="navbar-brand text-white fs-3 mb-1" href="{% url 'articles' %}">
+            Django Feeds
+          </a>
+
+          <button class="navbar-toggler p-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <svg fill="#FFFFFF" width="32" height="32">
+              <path d="M26,16c0,1.104-0.896,2-2,2H8c-1.104,0-2-0.896-2-2s0.896-2,2-2h16C25.104,14,26,14.896,26,16z" />
+              <path d="M26,8c0,1.104-0.896,2-2,2H8c-1.104,0-2-0.896-2-2s0.896-2,2-2h16C25.104,6,26,6.896,26,8z" />
+              <path d="M26,24c0,1.104-0.896,2-2,2H8c-1.104,0-2-0.896-2-2s0.896-2,2-2h16C25.104,22,26,22.896,26,24z" />
+            </svg>
+          </button>
+
+        </div>
+      </nav>
+    </header>
+  {% endblock %}
+
+  {% block messages %}
+    <div class="mb-4">
+      {% for message in messages %}
+      {% endfor %}
+    </div>
+  {% endblock %}
+
+  {% block body %}
+    <div class="container-fluid">
+      <div class="row">
+        {% block content %}
+          {% block sidebar %}
+            <div class="col-sm-4">
+            </div>
+          {% endblock %}
+          {% block main %}
+            <main class="col-sm-8">
+            </main>
+          {% endblock %}
+        {% endblock %}
+      </div>
+    </div>
+  {% endblock %}
+
+  {% block footer %}
+    <footer>
+    </footer>
+  {% endblock %}
+
+  {% block extra_js %}
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/index.js' %}"></script>
+  {% endblock %}
+
 </body>
 </html>
-

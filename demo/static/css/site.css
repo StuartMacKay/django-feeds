@@ -1,0 +1,105 @@
+.text-underline-hover {
+    text-decoration: none;
+    color: inherit;
+}
+
+.text-underline-hover:hover {
+    text-decoration: underline;
+    color: inherit;
+}
+
+a.article-link:visited {
+    color: #6c757d !important;
+}
+
+.calendar-date {
+  width: 4rem;
+  min-width: 4rem;
+  text-align: center;
+  font-size: 1.4rem;
+  margin-top: 0.25rem;
+  margin-right: 1.5rem;
+}
+
+.calendar-date .month {
+  border: 1px solid #dee2e6 !important;
+  border-bottom: 0 !important;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+  color: white;
+}
+
+.calendar-date .day {
+  border: 1px solid #dee2e6 !important;
+  border-top: 0 !important;
+  border-bottom-left-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+}
+
+.tag-size-1 {
+  font-size: 0.875rem;
+  --tw-text-opacity: 1;
+  color: rgba(156, 163, 175, var(--tw-text-opacity));
+}
+
+.tag-size-2 {
+  font-size: 1rem;
+  --tw-text-opacity: 1;
+  color: rgba(107, 114, 128, var(--tw-text-opacity));
+}
+
+.tag-size-3 {
+  font-size: 1.125rem;
+  --tw-text-opacity: 1;
+  color: rgba(75, 85, 99, var(--tw-text-opacity));
+}
+
+.tag-size-4 {
+  font-size: 1.25rem;
+  --tw-text-opacity: 1;
+  color: rgba(55, 65, 81, var(--tw-text-opacity));
+}
+
+.tag-size-5 {
+  font-size: 1.375rem;
+  --tw-text-opacity: 1;
+  color: rgba(31, 41, 55, var(--tw-text-opacity));
+}
+
+.tag-size-6 {
+  font-size: 1.5rem;
+  --tw-text-opacity: 1;
+  color: rgba(17, 24, 39, var(--tw-text-opacity));
+}
+
+/* Remove black border from hamburger button */
+.navbar-toggler:focus,
+.navbar-toggler:active,
+.navbar-toggler-icon:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.label-deleted {
+  color: #ffffff;
+  background-color: #ef2929;
+  border: thin solid #ef2929;
+}
+
+.label-private {
+  color: #ffffff;
+  background-color: #ef2929;
+  border: thin solid #ef2929;
+}
+
+.label-updated {
+  color: #ffffff;
+  background-color: #3465a4;
+  border: thin solid #3465a4;
+}
+
+.label-repost {
+  color: #2e3436;
+  background-color: #fce94f;
+  border: thin solid #fce94f;
+}

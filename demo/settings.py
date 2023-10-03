@@ -1,0 +1,119 @@
+"""
+Demo site settings
+
+"""
+import logging
+import os
+from django.core.exceptions import ImproperlyConfigured
+
+DEBUG = True
+
+DEMO_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR = os.path.dirname(DEMO_DIR)
+
+SECRET_KEY = "+^%b!5_!ul7prtm_y0w_xluJg32aqna&+)&thhy3)jqr2g*0%s"
+
+INSTALLED_APPS = (
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "debug_toolbar",
+    "django_extensions",
+    "tagulous",
+    "feeds.apps.Config",
+    "demo.apps.Config",
+)
+
+MIDDLEWARE = [
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
+]
+
+ROOT_URLCONF = "demo.urls"
+
+STATIC_URL = "/static/"
+
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+                "django.template.context_processors.request",
+            ],
+        },
+    },
+]
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": "feeds",
+        "USER": "feeds",
+        "PASSWORD": "feeds",
+        "HOST": os.environ["DB_HOST"],
+        "PORT": 5432,
+    }
+}
+
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
+
+USE_TZ = True
+
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "")
+
+CELERY_TASK_ALWAYS_EAGER = CELERY_BROKER_URL == ""
+
+CELERY_ACCEPT_CONTENT = ["json"]
+
+CELERY_WORKER_HIJACK_ROOT_LOGGER = False
+
+CELERY_TASK_ROUTES = {
+    "demo.tasks.load_feeds": {"delivery_mode": "transient"},
+}
+
+LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO")
+
+if LOG_LEVEL not in ("CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG", "NOTSET"):
+    raise ImproperlyConfigured("Unknown level for logging: " + LOG_LEVEL)
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "json": {
+            "()": "demo.formatters.JSONFormatter",
+        },
+    },
+    "handlers": {
+        "stdout": {
+            "class": "logging.StreamHandler",
+            "formatter": "json",
+        },
+    },
+    "loggers": {
+        "django": {
+            "level": "ERROR",
+            "handlers": ["stdout"],
+            "propagate": False,
+        },
+        "": {
+            "handlers": ["stdout"],
+            "level": LOG_LEVEL,
+        },
+    },
+}

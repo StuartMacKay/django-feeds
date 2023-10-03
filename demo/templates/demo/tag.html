@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% load feeds i18n %}
+
+{% block title %}{% translate "Tag" %}: {{ tag.name }}{% endblock %}
+
+{% block sidebar %}
+  <div class="col-sm-4 px-3 mb-4">
+    <h1 class="fs-4">{{ tag.name }}</h1>
+    {% if tag.description %}
+      <div class="mb-4">
+        {{ tag.description|safe }}
+      </div>
+    {% endif %}
+    {% if tag.related.exists %}
+      <h2 class="fs-5">{% translate "Related Tags" %}</h2>
+      <ul class="d-flex flex-row flex-wrap list-unstyled">
+        {% for tag in tag.related.all %}
+          <li class="px-1 align-self-center">
+            <a href="{% url 'tag' tag.slug %}"
+               class="text-underline-hover">{{ tag.name }}</a>
+          </li>
+       {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+{% endblock %}
+
+{% block main %}
+  <div class="col-sm-8 px-3">
+    <ul class="list-unstyled mb-4">
+    {% for article in page_obj.object_list %}
+      <li class="mb-2">
+        <div>
+          <a rel="external" class="fs-5 text-underline-hover article-link align-middle"
+             data-link="{% url "article-click" %}" data-code="{{ article.code }}"
+             href="{{ article.url }}">{{ article.title }}</a>
+          {% if show_labels %}
+            {% for label in article|categories:"label" %}
+              <span class="badge ms-2 align-middle label-{{ label.slug }}">{{ label.label|capfirst }}</span>
+            {% endfor %}
+          {% endif %}
+        </div>
+        <small class="text-muted">
+          {{ article.date|date:"jS M Y" }} -
+          {% if article.has_authors %}
+            {% for author in article.authors.all %}
+              {% if not forloop.first %} ,{% endif %}<a class="text-underline-hover" href="{% url 'author' author.slug %}">{{ author.name }}</a>
+            {% endfor %}
+            -
+          {% endif %}
+          <a class="text-underline-hover"
+             href="{% url 'source' article.source.slug %}">{{ article.source.name }}</a>
+          {% if article.archive_url %}
+            - <a rel="external" class="text-underline-hover article-link"
+                 data-link="{% url "article-click" %}" data-code="{{ article.code }}"
+                 href="{{ article.archive_url }}">{% translate "Archived" %}</a>
+          {% endif %}
+          {% if article.views %}
+            - {% blocktranslate count views=article.views %}
+                {{ views }} view
+              {% plural %}
+                {{ views }} views
+            {% endblocktranslate %}
+          {% endif %}
+        </small>
+        {% if article.comment %}
+          <div class="mt-1 pb-2"><em>{{ article.comment|safe }}</em></div>
+        {% endif %}
+      </li>
+    {% endfor %}
+    </ul>
+
+    {% block pagination %}
+      {% include "demo/snippets/pagination.html" %}
+    {% endblock %}
+
+  </div>
+{% endblock %}
