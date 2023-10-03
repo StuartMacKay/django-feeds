@@ -17,29 +17,33 @@ def read(filename):
 
 
 setup(
-    name="django-library-project",
+    name="django-rss-feeds",
     version="0.0.0",
-    description="A deployable Django app.",
+    description="An aggregator for RSS and Atom feeds.",
     long_description=read("README.md"),
     long_description_content_type="text/x-rst",
     author="Stuart MacKay",
     author_email="smackay@flagstonesoftware.com",
-    keywords="django, app, template",
-    url="https://github.com/StuartMacKay/django-app-template",
-    packages=[
-        "app_project",
-        "app_project/migrations"
-    ],
+    keywords="django, rss, atom",
+    url="https://github.com/StuartMacKay/django-feeds",
+    packages=["feeds", "feeds/migrations"],
     package_dir={"": "src"},
     include_package_data=True,
     zip_safe=False,
     python_requires=">=3.8",
-    install_requires="Django>=3.2",
+    install_requires=[
+        "Django>=3.2,<3.3",
+        "croniter",
+        "django-extensions",
+        "django-tagulous",
+        "feedparser",
+        "python-dateutil",
+        "psycopg2-binary",
+    ],
     license="License :: OSI Approved :: Apache Software License",
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Framework :: Django :: 3.2",
-        "Framework :: Django :: 4.0",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Apache Software License",
         "Natural Language :: English",
@@ -47,5 +51,5 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.10",
-    ]
+    ],
 )

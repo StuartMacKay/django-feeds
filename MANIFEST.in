@@ -11,11 +11,9 @@ include CHANGELOG.rst
 exclude setup.cfg
 exclude pyproject.toml
 
-recursive-include src/app_project/locale *
-recursive-include src/app_project/templates *
-recursive-include src/app_project/static *
+recursive-include src/feeds/ *
 
-recursive-exclude src/app_project/tests *
+recursive-exclude src/feeds/tests *
 
 recursive-exclude * .cache
 recursive-exclude * __pycache__
