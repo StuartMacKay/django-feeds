@@ -11,8 +11,7 @@ __pycache__/
 !.dockerignore
 !.editorconfig
 !.envrc
-!.env
-!.env.docker
+!.env.example
 !.flake8
 !.gitattributes
 !.github

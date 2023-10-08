@@ -7,33 +7,6 @@ The assumption is that you are working in a Linux environment with PostgreSQL
 and RabbitMQ installed natively. If you would rather not install these, then 
 see below, where various options are listed.
 
-If you encounter any problems, please check the Troubleshooting section below,
-for a solution.
-
-Create a database account:
-
-```shell
-sudo -u postgres psql
-```
-
-```shell
-postgres=# create database feeds;
-postgres=# create user feeds with createdb encrypted password 'feeds';
-postgres=# grant all privileges on database feeds to feeds;
-postgres=# \q
-```
-
-If you want to use another account, be sure to change the DATABASES setting
-in `demo/settings.py` to match.
-
-Create a message broker account:
-
-```shell
-sudo rabbitmqctl add_user feeds feeds
-sudo rabbitmqctl add_vhost feeds
-sudo rabbitmqctl set_permissions -p feeds feeds ".*" ".*" ".*"
-```
-
 Checkout the repository:
 
 ```shell
@@ -55,12 +28,6 @@ pip install pip-tools
 pip-sync requirements/dev.txt
 ```
 
-Set environment variables used by Django:
-
-```shell
-source .env
-```
-
 Run the tests:
 
 ```shell
@@ -75,6 +42,13 @@ python manage.py migrate
 python manage.py createsuperuser
 python manage.py runserver
 ```
+
+## Setting environment variables
+
+Whether you create a virtualenv or use docker the demo site runs out of the 
+box. If you need to change the configuration the `env.example` file contains 
+a complete list of variables that are used to configure the docker containers
+or are used for Django settings.
 
 ## Using direnv
 
@@ -122,11 +96,62 @@ all the components: db, celery, web, etc. That way you can use a mix of services
 running natively or in containers:
 
 ```shell
-docker-compose up db broker
+docker-compose up postgres rabbitmq
 ```
 
 If you use an IDE that supports docker then just run everything in containers:
 
 ```shell
 docker-compose up
+```
+
+## Using a different database
+
+The configuration uses the default `postgres` database. If you want to keep 
+the databases for different projects separate then run the following commands:
+
+```shell
+sudo -u postgres psql
+```
+
+```shell
+postgres=# create database feeds;
+postgres=# create user feeds with createdb encrypted password 'feeds';
+postgres=# grant all privileges on database feeds to feeds;
+postgres=# \q
+```
+
+There's no need to create another user, you could still use the default 
+`postgres` account. You will also need to change the following environment
+variables in an `.env` file:
+
+```shell
+POSTGRES_USER=feeds
+POSTGRES_PASSWORD=feeds
+POSTGRES_DB=feeds
+```
+
+If you use postgreSQL's command line tools for managing the database then 
+remember to also change the following:
+
+```shell
+PGDATABASE=feeds
+```
+
+## Using a different RabbitMQ account and vhost
+
+For the same reasons for keeping the project database separate you may 
+also want to create a separate account and vhost for RabbitMQ.
+
+```shell
+sudo rabbitmqctl add_user feeds feeds
+sudo rabbitmqctl add_vhost feeds
+sudo rabbitmqctl set_permissions -p feeds feeds ".*" ".*" ".*"
+```
+
+You will need to set the environment variables in `.env` so celery
+can connect to RabbitMQ:
+
+```shell
+CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672/
 ```

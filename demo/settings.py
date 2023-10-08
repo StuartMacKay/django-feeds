@@ -1,6 +1,11 @@
 """
 Demo site settings
 
+The database and celery settings assume everything is running
+on localhost. When using a virtualenv, no environment variables
+need to be set to run the demo site. When running the site using
+docker the variables are defined in the docker-compose file.
+
 """
 import logging
 import os
@@ -58,11 +63,11 @@ TEMPLATES = [
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "feeds",
-        "USER": "feeds",
-        "PASSWORD": "feeds",
-        "HOST": os.environ["DB_HOST"],
-        "PORT": 5432,
+        "NAME": os.environ.get("POSTGRES_DB", "postgres"),
+        "USER": os.environ.get("POSTGRES_USER", "postgres"),
+        "PASSWORD": os.environ.get("POSTGRES_PASS", "postgres"),
+        "HOST": os.environ.get("POSTGRES_HOST", "localhost"),
+        "PORT": os.environ.get("POSTGRES_PORT", 5432),
     }
 }
 
@@ -74,7 +79,9 @@ INTERNAL_IPS = [
 
 USE_TZ = True
 
-CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "")
+CELERY_BROKER_URL = os.environ.get(
+    "CELERY_BROKER_URL", "amqp://guest:guest@localhost:5672/"
+)
 
 CELERY_TASK_ALWAYS_EAGER = CELERY_BROKER_URL == ""
 
