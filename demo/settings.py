@@ -79,20 +79,6 @@ INTERNAL_IPS = [
 
 USE_TZ = True
 
-CELERY_BROKER_URL = os.environ.get(
-    "CELERY_BROKER_URL", "amqp://guest:guest@localhost:5672/"
-)
-
-CELERY_TASK_ALWAYS_EAGER = CELERY_BROKER_URL == ""
-
-CELERY_ACCEPT_CONTENT = ["json"]
-
-CELERY_WORKER_HIJACK_ROOT_LOGGER = False
-
-CELERY_TASK_ROUTES = {
-    "demo.tasks.load_feeds": {"delivery_mode": "transient"},
-}
-
 LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO")
 
 if LOG_LEVEL not in ("CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG", "NOTSET"):

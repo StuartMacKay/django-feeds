@@ -8,8 +8,24 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "demo.settings")
 
 app = Celery()
 
+
+class CeleryConfig:
+    # Configure logging using Django's LOGGING setting. Caveat: since logging
+    # is configured using the setup_logging signal, see below, this might not
+    # be needed.
+    worker_hijack_root_logger = False
+
+    # The default, unless it is overridden using an environment variable
+    # is to assume we are running the demo using a virtualenv and connect
+    # to a locally install instance of rabbitmq. When using containers,
+    # the broker url will be set to connect to the rabbitmq service.
+    broker_url = os.environ.get(
+        "CELERY_BROKER_URL", "amqp://guest:guest@localhost:5672/"
+    )
+
+
 # Load the configuration
-app.config_from_object("demo.settings")
+app.config_from_object(CeleryConfig)
 # Load task modules from all registered Django app configs.
 app.autodiscover_tasks()
 
@@ -38,6 +54,15 @@ app.conf.beat_schedule = {
         "task": "feed.tasks.daily_digest",
         "schedule": crontab(minute="0", hour="2"),  # 2am, each day
     },
+}
+
+# Since the feeds are loaded regularly there is no need to write messages
+# to disk so they can simply be thrown away if the broker or workers are
+# not available. Caveat: Not entirely sure this is working as expected.
+# Some queuing of messages does appear to be happending.
+
+app.conf.task_routes = {
+    "demo.tasks.load_feeds": {"delivery_mode": "transient"},
 }
 
 
