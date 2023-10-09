@@ -14,7 +14,6 @@ __pycache__/
 !.env.example
 !.flake8
 !.gitattributes
-!.github
 !.gitignore
 !.gitkeep
 !.readthedocs.yml
