@@ -62,20 +62,17 @@ individually.
 the feed. Some sites won't work without this set. In any case it's always 
 good manners to identify yourself.
 
-`FEEDS_NORMALIZE_TITLES`, default True. Tidy up titles to remove surrounding 
-quotes, remove trailing periods, etc. That way titles from different Feeds 
-have the same style.
+`FEEDS_FILTER_TITLE`, default None. Python path to a function that will be 
+dynamically imported to process the title of an entry before it is used to 
+create or update an Article.
 
-`FEEDS_TRUNCATE_TITLES`, default None. Limit the length of titles. Some 
-titles are mini-posts all by themselves so you can used this to truncate 
-them to a given number of characters.
+`FEEDS_FILTER_AUTHORS`, default None. Python path to a function that will be 
+dynamically imported to process the list of authors for an entry before it is 
+used to create or update an Article.
 
-`FEEDS_FILTER_TAGS`, default {"uncategorized": None}. Use this to rename 
-or delete tags from the Feed. The default allows you to remove the default 
-"Uncategorized" tag that often appears in Wordpress feeds. There is a 
-`load_tags` flag on Feed that controls whether tags are added to Articles. 
-That allows you to selectively load the tags from conscientious blogs and 
-skip the lazy one.
+`FEEDS_FILTER_TAGS`, default None. Python path to a function that will be 
+dynamically imported to process the list of tags for an entry before it is 
+used to create or update an Article.
 
 ## Contributing
 

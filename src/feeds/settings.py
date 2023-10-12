@@ -43,22 +43,42 @@ if not croniter.is_valid(FEEDS_LOAD_SCHEDULE):
 
 FEEDS_USER_AGENT = os.environ.get("FEEDS_USER_AGENT", "Django Feeds")
 
-# Reformat titles from feeds to remove surrounding quotes, extra whitespace,
-# trailing periods, etc.
+# The following settings provide post-load hooks to process / filter the
+# title, list of authors and list of tags for each entry in a feed.
 
-FEEDS_NORMALIZE_TITLES = True
+# Python path to a function which can be used to modify a title before it
+# is used to create or update an Article. For example remove any leading
+# or trailing whitespace.
+#
+# FEEDS_FILTER_TITLE = "myapp.utils.filter_title"
+#
+# def filter_title(title: str) -> str:
+#     return title.strip()
 
-# Limit titles to a specific number of characters. Some blog post titles can be
-# hundreds of characters in length - almost mini-articles.
+FEEDS_FILTER_TITLE = None
 
-FEEDS_TRUNCATE_TITLES = None
+# Python path to a function which can be used to modify the list of authors
+# of a post before they are added to an Article. For example, capitalize
+# names.
+#
+# FEEDS_FILTER_AUTHORS = "myapp.utils.filter_authors"
+#
+# def filter_authors(names: List[str]) -> List[str]:
+#     return [name.title() for name in names]
 
-# Table used to filter tags. Tags are either renamed or if the value for an entry is
-# None then dropped. The comparison between the tag and the key is case-insensitive.
+FEEDS_FILTER_AUTHORS = None
 
-FEEDS_FILTER_TAGS = {
-    "uncategorized": None,
-}
+# Python path to a function which can be used to modify the list of tags
+# for a post before they are added to an Article. For example, remove the
+# default, "Uncategorized" tag found on many WordPress feeds.
+#
+# FEEDS_FILTER_TAGS = "myapp.utils.filter_tags"
+#
+# def filter_tags(names: List[str]) -> List[str]:
+#     skip = ["uncategorized",]
+#     return [name for name in names if name.lower() not in skip]
+
+FEEDS_FILTER_TAGS = None
 
 # ############
 #   Tagulous

@@ -1,5 +1,4 @@
 import logging
-import re
 from datetime import datetime
 from html import unescape
 from typing import List, Optional
@@ -10,6 +9,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
 from django.template.defaultfilters import truncatechars
 from django.utils import timezone
+from django.utils.module_loading import import_string
 from django.utils.text import slugify
 
 import feedparser  # type: ignore
@@ -169,10 +169,9 @@ def get_identifier(item: FeedParserDict) -> str:
 def get_title(item: FeedParserDict) -> str:
     # Some feeds, e.g. cartoons, might just contain an image so there is no title
     title = unescape(item.get("title", ""))
-    if settings.FEEDS_NORMALIZE_TITLES:
-        title = normalize_title(title)
-    if settings.FEEDS_TRUNCATE_TITLES:
-        title = truncatechars(title, settings.FEEDS_TRUNCATE_TITLES)
+    if getattr(settings, "FEEDS_FILTER_TITLE", None):
+        processor = import_string(settings.FEEDS_FILTER_TITLE)
+        title = processor(title)
     return title
 
 
@@ -203,44 +202,23 @@ def get_summary(item: FeedParserDict) -> str:
 
 
 def get_names(item: FeedParserDict) -> List[str]:
-    return [
+    names: List[str] = [
         author.get("name")  # noqa
         for author in item.get("authors", [])
         if author.get("name")  # noqa
     ]
+    if getattr(settings, "FEEDS_FILTER_AUTHORS", None):
+        processor = import_string(settings.FEEDS_FILTER_AUTHORS)
+        names = processor(names)
+    return names
 
 
 def get_tags(item: FeedParserDict) -> List[str]:
-    return sorted([tag.get("term") for tag in item.get("tags", []) if tag.get("term")])
-
-
-def normalize_title(value: str) -> str:
-    # Skip changes if the title is empty
-    if not value:
-        return value
-    # Strip double-quotes around a title
-    if value[0] == value[-1] == '"':
-        value = value[1:-1]
-    # Strip single-quotes around a title
-    if value[0] == value[-1] == "'":
-        value = value[1:-1]
-    # Remove any trailing periods but leave an ellipsis alone
-    if value[-1] == "." and value[-2] != ".":
-        value = value[:-1]
-    # Remove extra whitespace
-    value = " ".join(value.split())
-    # Put a space before and after a hyphen
-    value = re.sub(r"(\w(\")?)-", r"\1 -", value)
-    value = re.sub(r"-((\")?(\w))", r"- \1", value)
-    # Put a space after a comma
-    value = re.sub(r"(\w),(\w)", r"\1, \2", value)
-    # Remove a space before a comma
-    value = re.sub(r"(\w) ,", r"\1,", value)
-    # Put a space before an opening bracket
-    value = re.sub(r"(\w)\(", r"\1 (", value)
-    # Put a space after a closing bracket
-    value = re.sub(r"\)(\w)", r") \1", value)
-    return value
+    tags = sorted([tag.get("term") for tag in item.get("tags", []) if tag.get("term")])
+    if getattr(settings, "FEEDS_FILTER_TAGS", None):
+        processor = import_string(settings.FEEDS_FILTER_TAGS)
+        tags = processor(tags)
+    return tags
 
 
 def article_with_identifier(identifier: str) -> tuple[Article, bool]:
@@ -286,9 +264,8 @@ def authors_for_names(feed: Feed, names: List[str]) -> List[Author]:
 def tags_for_names(names: List[str]) -> List[int]:
     tags: List[int] = []
     for name in names:
-        if alias := settings.FEEDS_FILTER_TAGS.get(name.lower(), name):
-            tag, created = Tag.objects.get_or_create(name=alias, slug=slugify(alias))
-            tags.append(tag.pk)
+        tag, created = Tag.objects.get_or_create(name=name, slug=slugify(name))
+        tags.append(tag.pk)
     return tags
 
 

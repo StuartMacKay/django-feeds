@@ -84,7 +84,7 @@ def test_article_added(monkeypatch, feed_template, feed_context):
 
     article = articles[0]
 
-    assert article.title == loader.normalize_title(feed_context["title"])
+    assert article.title == feed_context["title"]
     assert article.url == feed_context["url"]
     assert article.date == feed_context["date"]
     assert article.date.microsecond == 0
@@ -192,104 +192,3 @@ def test_article_author_alias(monkeypatch, feed_template, feed_context):
     article = Article.objects.all().first()
 
     assert article.authors.first() == author
-
-
-titles = [
-    (" Hello World", "Hello World"),  # leading space
-    ("  Hello World", "Hello World"),  # multiple leading spaces
-    ("Hello World ", "Hello World"),  # trailing space
-    ("Hello World  ", "Hello World"),  # multiple trailing spaces
-    ("Hello World.", "Hello World"),  # trailing period
-    ("Hello World...", "Hello World..."),  # trailing ellipsis
-    ("Hello- World", "Hello - World"),  # no space before hyphen
-    ("Hello -World", "Hello - World"),  # no space after hyphen
-    ("Hello , World", "Hello, World"),  # space before comma
-    ("Hello,World", "Hello, World"),  # no space after comma
-    ("Hello(World)", "Hello (World)"),  # no space before bracket
-    ("(Hello)World", "(Hello) World"),  # no space after bracket
-]
-
-
-@pytest.mark.parametrize("before, expected", titles)
-def test_normalise_title(before, expected):
-    after = loader.normalize_title(before)
-    assert after == expected
-
-
-def test_normalise_title_setting_on(monkeypatch, feed_template, feed_context, settings):
-    def mock_return(feed):
-        template = Template(feed_template)
-        context = Context(feed_context)
-        return template.render(context)
-
-    monkeypatch.setattr(loader, "get_source", mock_return)
-    settings.FEEDS_NORMALIZE_TITLES = True
-    feed = FeedFactory.create(enabled=True)
-    loader.load_feed(feed)
-    article = Article.objects.all().first()
-    assert article.title == feed_context["title"][:-1]
-
-
-def test_normalise_title_setting_off(
-    monkeypatch, feed_template, feed_context, settings
-):
-    def mock_return(feed):
-        template = Template(feed_template)
-        context = Context(feed_context)
-        return template.render(context)
-
-    monkeypatch.setattr(loader, "get_source", mock_return)
-    settings.FEEDS_NORMALIZE_TITLES = False
-    feed = FeedFactory.create(enabled=True)
-    loader.load_feed(feed)
-    article = Article.objects.all().first()
-    assert article.title == feed_context["title"]
-
-
-def test_tag_filter_setting_removes_tags(
-    monkeypatch, feed_template, feed_context, settings
-):
-    def mock_return(feed):
-        template = Template(feed_template)
-        context = Context(feed_context)
-        return template.render(context)
-
-    monkeypatch.setattr(loader, "get_source", mock_return)
-    settings.FEEDS_FILTER_TAGS = {"delete": None}
-    feed_context["tags"] = ["Delete"]
-    feed = FeedFactory.create(enabled=True)
-    loader.load_feed(feed)
-    article = Article.objects.all().first()
-    assert article.tags.all().count() == 0
-
-
-def test_tag_filter_setting_renames_tags(
-    monkeypatch, feed_template, feed_context, settings
-):
-    def mock_return(feed):
-        template = Template(feed_template)
-        context = Context(feed_context)
-        return template.render(context)
-
-    monkeypatch.setattr(loader, "get_source", mock_return)
-    settings.FEEDS_FILTER_TAGS = {"first": "Second"}
-    feed_context["tags"] = ["First"]
-    feed = FeedFactory.create(enabled=True)
-    loader.load_feed(feed)
-    article = Article.objects.all().first()
-    assert article.tags.first().name == "Second"
-
-
-def test_titles_are_truncated(monkeypatch, feed_template, feed_context, settings):
-    def mock_return(feed):
-        template = Template(feed_template)
-        context = Context(feed_context)
-        return template.render(context)
-
-    monkeypatch.setattr(loader, "get_source", mock_return)
-    settings.FEEDS_TRUNCATE_TITLES = 21
-    feed_context["title"] = "The quick, brown fox jumped over the the lazy dog"
-    feed = FeedFactory.create(enabled=True)
-    loader.load_feed(feed)
-    article = Article.objects.all().first()
-    assert article.title == "The quick, brown fox…"
