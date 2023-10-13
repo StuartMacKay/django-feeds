@@ -29,7 +29,7 @@ def categories(article: Article, prefix: str) -> List[Category]:
     be clumsy to embed the styling for each label type in the template. This
     works when the set of labels is predefined. However, in situations where
     the labels are not known in advance then it would make more sense to store
-    them in a (JSON) field on the Category model.
+    them in the (JSON) data field on the Category model.
 
     NOTE: the set of matching Categories objects is created using a list
     comprehension as it assumes the categories were prefetched. Using
