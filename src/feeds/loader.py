@@ -231,8 +231,8 @@ def article_with_identifier(identifier: str) -> tuple[Article, bool]:
     return article, created
 
 
-def authors_for_names(feed: Feed, names: List[str]) -> List[Author]:
-    authors: List[Author] = []
+def authors_for_names(feed: Feed, names: List[str]) -> List[int]:
+    authors: List[int] = []
 
     for name in names:
         author: Optional[Author]
@@ -256,7 +256,7 @@ def authors_for_names(feed: Feed, names: List[str]) -> List[Author]:
                 author = Author.objects.with_slug(slug).first()
 
         if author:
-            authors.append(author)
+            authors.append(author.pk)
 
     return authors
 
