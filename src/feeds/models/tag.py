@@ -50,10 +50,13 @@ class Tag(TimeStampedModel):  # type: ignore
 
     slug = AutoSlugField(
         verbose_name=_("Slug"),
-        help_text=_("The slug uniquely identifying the tag"),
+        help_text=_(
+            "The slug uniquely identifying the tag. Generated automatically when field is left blank."
+        ),
         populate_from="name",
         max_length=100,
         unique=True,
+        editable=True,
     )
 
     summary = models.TextField(

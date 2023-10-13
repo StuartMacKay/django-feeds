@@ -27,18 +27,17 @@ class SourceAdmin(ModelAdmin):
         "pretty_data",
         "created",
         "modified",
-        "slug",
     )
 
     fields = (
         "name",
+        "slug",
         "url",
         "description",
         "data",
         "pretty_data",
         "created",
         "modified",
-        "slug",
     )
 
     formfield_overrides = {

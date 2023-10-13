@@ -26,7 +26,6 @@ class AuthorAdmin(ModelAdmin):
     readonly_fields = (
         "created",
         "modified",
-        "slug",
     )
 
     actions = ("merge_authors", "show_articles")

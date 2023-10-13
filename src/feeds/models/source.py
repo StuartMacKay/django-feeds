@@ -18,10 +18,13 @@ class Source(TimeStampedModel):  # type: ignore
 
     slug = AutoSlugField(
         verbose_name=_("Slug"),
-        help_text=_("The slug uniquely identifying the source"),
+        help_text=_(
+            "The slug uniquely identifying the source. Generated automatically when field is left blank."
+        ),
         populate_from="name",
         max_length=100,
         unique=True,
+        editable=True,
     )
 
     url = models.URLField(
