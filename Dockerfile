@@ -4,8 +4,8 @@
 #
 
 # Base python image
-FROM python:3.11.5-bookworm
-# Add the project to the python path
+FROM python:3.11.5-slim-bookworm
+# Add the site to the python path
 ENV PYTHONPATH /app
 # Send all output on stdout and stderr straight to the container logs
 ENV PYTHONUNBUFFERED 1
