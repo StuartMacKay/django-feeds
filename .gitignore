@@ -20,9 +20,9 @@ __pycache__/
 
 # Project artefacts
 build
+coverage
 dist
 logs
-reports
 venv
 
 # Django runtime files
