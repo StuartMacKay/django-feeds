@@ -5,7 +5,7 @@
 
 # Base python image
 FROM python:3.11.5-slim-bookworm
-# Add the site to the python path
+# Add the project to the python path
 ENV PYTHONPATH /app
 # Send all output on stdout and stderr straight to the container logs
 ENV PYTHONUNBUFFERED 1
@@ -18,7 +18,9 @@ ENV TERM xterm-256color
 RUN mkdir /app
 WORKDIR /app
 
-# Install OS dependencies
+# Install any os-level dependencies
+# Out of the box, no extra dependences are needed so
+# this is here just as a placeholder.
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends
@@ -27,7 +29,7 @@ RUN apt-get install -y --no-install-recommends \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install project requirements
+# Install requirements
 
 # Copy across all the files needed to install feeds as an editable
 # package since the volume has not been mounted yet.
