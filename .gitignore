@@ -10,13 +10,12 @@ __pycache__/
 .*
 !.dockerignore
 !.editorconfig
-!.envrc
 !.env.example
+!.envrc
 !.flake8
 !.gitattributes
 !.gitignore
 !.gitkeep
-!.readthedocs.yml
 
 # Project artefacts
 build
@@ -26,7 +25,6 @@ logs
 venv
 
 # Django runtime files
-db.sqlite3
 celerybeat-schedule
 
 # Any local makefiles
