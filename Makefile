@@ -208,4 +208,4 @@ patch:
 
 .PHONY: upload
 upload:
-	$(twine) upload --skip-existing --sign dist/*
+	$(twine) upload --skip-existing dist/*
